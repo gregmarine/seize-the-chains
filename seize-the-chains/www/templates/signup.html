@@ -9,9 +9,13 @@
       <span class="input-label">Password</span>
       <input type="password" ng-model="loginData.password" placeholder="Password">
     </label>
+    <label class="item item-input item-floating-label">
+      <span class="input-label">Retype Password</span>
+      <input type="password" ng-model="loginData.retype_password" placeholder="Retype Password">
+    </label>
     <div class="item text-right">
-      <button ng-click="signup()" class="button button-clear button-stable">Sign Up</button>
-      <button ng-click="passwordLogin()" class="button button-clear button-balanced">Log In</button>
+      <button ng-click="cancel()" class="button button-clear button-stable">Cancel</button>
+      <button ng-click="createUser()" class="button button-clear button-balanced">Sign Up</button>
     </div>
   </div>
 </ion-content>
