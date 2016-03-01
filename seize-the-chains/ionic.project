@@ -1,6 +1,6 @@
 {
-  "name": "seize-the-chains",
-  "app_id": "",
+  "name": "Seize the Chains",
+  "app_id": "com.seizethechains.app",
   "gulpStartupTasks": [
     "sass",
     "watch"
