@@ -1,6 +1,6 @@
 angular.module('app.services', [])
 
-.factory('Data', ['$firebaseAuth', 'FirebaseConfig', function($firebaseAuth, FirebaseConfig) {
+.factory('Data', ['$firebaseAuth', '$firebaseArray', '$firebaseObject', 'FirebaseConfig', function($firebaseAuth, $firebaseArray, $firebaseObject, FirebaseConfig) {
   var _baseRef = new Firebase(FirebaseConfig.baseRefUrl);
   
   return {
@@ -73,6 +73,59 @@ angular.module('app.services', [])
         
         profile: function() {
           return _baseRef.child('users').child(authData.uid).child('profile');
+        }
+      };
+    },
+    
+    courses: function() {
+      var coursesArray = $firebaseArray(_baseRef.child('courses'));
+      
+      function totalPar(holes) {
+        var total = 0;
+        for(var i=0; i<holes.length; i++) {
+          total += holes[i].par;
+        }
+        return total;
+      }
+      
+      function totalDistance(holes) {
+        var total = 0;
+        for(var i=0; i<holes.length; i++) {
+          total += holes[i].distance;
+        }
+        return total;
+      }
+      
+      return {
+        all: function() {
+          return coursesArray;
+        },
+        
+        findOne: function(courseId) {
+          return $firebaseObject(_baseRef.child('courses').child(courseId));
+        },
+        
+        add: function(name, location, holes) {
+          var course = {
+            name: name,
+            location: location,
+            holes: holes,
+            totalPar: totalPar(holes),
+            totalDistance: totalDistance(holes)
+          };
+          
+          return coursesArray.$add(course);
+        },
+        
+        save: function(course) {
+          course.totalPar = totalPar(course.holes);
+          course.totalDistance = totalDistance(course.holes);
+          
+          return course.$save();
+        },
+        
+        remove: function(course) {
+          return course.$remove();
         }
       };
     }
