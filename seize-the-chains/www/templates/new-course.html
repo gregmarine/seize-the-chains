@@ -1,0 +1,54 @@
+<ion-view view-title="New Course">
+  <ion-content>
+    <div class="list list-inset">
+      <label class="item item-input item-floating-label">
+        <span class="input-label">Course Name</span>
+        <input ng-model="course.name" type="text" placeholder="Course Name">
+      </label>
+      <label class="item item-input item-floating-label">
+        <span class="input-label">Location</span>
+        <input ng-model="course.location" type="text" placeholder="Location">
+      </label>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        <span class="input-label">Hole</span>
+      </div>
+      <div class="col">
+        <span class="input-label">Par</span>
+      </div>
+      <div class="col">
+        <span class="input-label">Distance (ft)</span>
+      </div>
+    </div>
+    
+    <div ng-repeat="hole in course.holes" class="row">
+      <div class="col">
+        <span class="input-label">{{hole.number}}</span>
+      </div>
+      <div class="col">
+        <label class="item item-input">
+          <input ng-model="hole.par" type="number" placeholder="Par">
+        </label>
+      </div>
+      <div class="col">
+        <label class="item item-input">
+          <input ng-model="hole.distance" type="number" placeholder="Distance">
+        </label>
+      </div>
+    </div>
+    
+    <div class="row" style="margin-bottom: 48px;">
+      <div class="col">
+        <button class="button button-full button-balanced" ng-click="newHole()">Add Hole</button>
+      </div>
+    </div>
+    
+  </ion-content>
+  
+  <div class="bar bar-footer">
+    <button class="button button-clear" ng-click="cancel()">Cancel</button>
+    <button class="button button-clear button-balanced" ng-click="save()">Save</button>
+  </div>
+</ion-view>

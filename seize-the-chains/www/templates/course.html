@@ -1,0 +1,41 @@
+<ion-view view-title="">
+  <ion-nav-buttons side="right">
+    <a class="button button-clear button-icon ion-compose" href="#/app/course/{{courseId}}/edit"></a>
+    <a class="button button-clear button-icon ion-trash-b" ng-click="remove()"></a>
+  </ion-nav-buttons>
+  
+  <ion-content>
+    <div class="list list-inset">
+      <label class="item">
+        {{course.name}}
+      </label>
+      <label class="item">
+        {{course.location}}
+      </label>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        <span class="input-label">Hole</span>
+      </div>
+      <div class="col">
+        <span class="input-label">Par {{course.totalPar}}</span>
+      </div>
+      <div class="col">
+        <span class="input-label">Distance {{course.totalDistance}} ft</span>
+      </div>
+    </div>
+    
+    <div ng-repeat="hole in course.holes" class="row">
+      <div class="col">
+        <span class="input-label">{{hole.number}}</span>
+      </div>
+      <div class="col">
+        <span class="input-label">{{hole.par}}</span>
+      </div>
+      <div class="col">
+        <span class="input-label">{{hole.distance}}</span>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

@@ -254,4 +254,129 @@ angular.module('app.controllers', [])
 .controller('HomeCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $firebaseArray, $firebaseObject, Data, Message) {
   var authData = Data.auth.getAuth();
   
+})
+
+.controller('CoursesCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $firebaseArray, $firebaseObject, Data, Message) {
+  var authData = Data.auth.getAuth();
+  
+  $scope.courses = Data.courses().all();
+})
+
+.controller('CourseCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  var authData = Data.auth.getAuth();
+  
+  $scope.courseId = $stateParams.courseId;
+  
+  $scope.course = Data.courses().findOne($scope.courseId);
+  
+  $scope.remove = function() {
+    // 1. Confirm
+    var options = {
+      title: "Delete Account",
+      subTitle: "Are you sure you would like to delete " + $scope.course.name + "?",
+      message: "THIS CANNOT BE UNDONE!",
+      positive_label: "YES",
+      negative_label: "NO",
+      callback: function(result) {
+        if(result) {
+          // 2. Remove course
+          $ionicLoading.show({
+            template: 'Deleting Account...'
+          });
+        
+          Data.courses().remove($scope.course).then(function(ref) {
+            $ionicLoading.hide();
+            
+            $ionicHistory.goBack();
+          }, function(error) {
+            $ionicLoading.hide();
+            
+            $scope.error = error;
+            Message.timedAlert('Error', $scope.error, 'long');
+          });
+        }
+      }
+    };
+    Message.confirm(options);
+  };
+})
+
+.controller('NewCourseCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  var authData = Data.auth.getAuth();
+  
+  $scope.course = {
+    name: "",
+    location: "",
+    holes: []
+  };
+  
+  $scope.newHole = function() {
+    var hole = {
+      number: ($scope.course.holes.length + 1),
+      par: 3,
+      distance: 0
+    };
+    
+    $scope.course.holes.push(hole);
+  };
+  
+  $scope.cancel = function() {
+    $ionicHistory.goBack();
+  };
+  
+  $scope.save = function() {
+    $ionicLoading.show({
+      template: 'Saving Course...'
+    });
+    
+    Data.courses().add($scope.course.name,
+      $scope.course.location,
+      $scope.course.holes).then(function() {
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+      }).catch(function(error) {
+        $ionicLoading.hide();
+        
+        $scope.error = error;
+        Message.timedAlert('Error', $scope.error, 'short');
+      });
+  };
+})
+
+.controller('EditCourseCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  var authData = Data.auth.getAuth();
+  
+  $scope.courseId = $stateParams.courseId;
+  
+  $scope.course = Data.courses().findOne($scope.courseId);
+  
+  $scope.newHole = function() {
+    var hole = {
+      number: ($scope.course.holes.length + 1),
+      par: 3,
+      distance: 0
+    };
+    
+    $scope.course.holes.push(hole);
+  };
+  
+  $scope.cancel = function() {
+    $ionicHistory.goBack();
+  };
+  
+  $scope.save = function() {
+    $ionicLoading.show({
+      template: 'Saving Course...'
+    });
+    
+    Data.courses().save($scope.course).then(function() {
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+      }).catch(function(error) {
+        $ionicLoading.hide();
+        
+        $scope.error = error;
+        Message.timedAlert('Error', $scope.error, 'short');
+      });
+  };
 });
