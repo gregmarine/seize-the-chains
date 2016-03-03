@@ -67,6 +67,10 @@ angular.module('app.services', [])
       var authData = $firebaseAuth(_baseRef).$getAuth();
       
       return {
+        uid: function() {
+          return authData.uid;
+        },
+        
         ref: function() {
           return _baseRef.child('users').child(authData.uid);
         },
@@ -134,7 +138,7 @@ angular.module('app.services', [])
         },
         
         findOne: function(clubId) {
-          return $firebaseObject(_baseRef.child('clubs').child(clubId));
+          return _baseRef.child('clubs').child(clubId);
         },
         
         add: function(club) {
@@ -202,6 +206,33 @@ angular.module('app.services', [])
       });
       
       confirmPopup.then(function(result) {
+        options.callback(result);
+      });
+    },
+    
+    prompt: function(options) {
+      var promptPopup = $ionicPopup.show({
+        template: '<input type="' + options.type + '" ng-model="data.prompt">',
+        title: options.title,
+        subTitle: options.subTitle,
+        scope: options.scope,
+        buttons: [
+          { text: options.negative_label,
+            onTap: function(e) {
+              return false;
+            }
+          },
+          {
+            text: options.positive_label,
+            type: 'button-positive',
+            onTap: function(e) {
+              return this.scope.data.prompt;
+            }
+          }
+        ]
+      });
+      
+      promptPopup.then(function(result) {
         options.callback(result);
       });
     }

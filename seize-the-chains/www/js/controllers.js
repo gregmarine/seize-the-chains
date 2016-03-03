@@ -383,7 +383,27 @@ angular.module('app.controllers', [])
 .controller('ClubCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
   $scope.clubId = $stateParams.clubId;
   
-  $scope.club = Data.clubs().findOne($scope.clubId);
+  $scope.club = $firebaseObject(Data.clubs().findOne($scope.clubId));
+  $scope.club.$loaded()
+  .then(function(data) {
+    // See if current user is a player in this club
+    $scope.isplayer = false;
+    if($scope.club.players) {
+      var uid = Data.user().uid();
+      for(var i=0; i<$scope.club.players.length; i++) {
+        if($scope.club.players[i].uid === uid) {
+          $scope.isplayer = true;
+          break;
+        }
+      }
+    }
+  })
+  .catch(function(error) {
+    $scope.error = error;
+    Message.timedAlert('Error', $scope.error, 'long');
+  });
+  
+  $scope.profileData = $firebaseObject(Data.user().profile());
   
   $scope.remove = function() {
     // 1. Confirm
@@ -404,6 +424,163 @@ angular.module('app.controllers', [])
             $ionicLoading.hide();
             
             $ionicHistory.goBack();
+          }, function(error) {
+            $ionicLoading.hide();
+            
+            $scope.error = error;
+            Message.timedAlert('Error', $scope.error, 'long');
+          });
+        }
+      }
+    };
+    Message.confirm(options);
+  };
+  
+  $scope.addMe = function() {
+    var player = {
+      uid: Data.user().uid(),
+      name: $scope.profileData.fullname
+    };
+    
+    if(!$scope.club.players) {
+      $scope.club.players = [];
+    }
+    
+    $scope.club.players.push(player);
+    
+    $ionicLoading.show({
+      template: 'Saving Club...'
+    });
+    
+    Data.clubs().save($scope.club).then(function() {
+      $ionicLoading.hide();
+      $scope.isplayer = true;
+    }).catch(function(error) {
+      $ionicLoading.hide();
+      
+      $scope.error = error;
+      Message.timedAlert('Error', $scope.error, 'short');
+    });
+  };
+  
+  $scope.addPlayer = function() {
+    var options = {
+      title: "Add League Player",
+      subTitle: "Name of the league player to add:",
+      scope: $scope,
+      positive_label: "ADD",
+      negative_label: "CANCEL",
+      callback: function(result) {
+        if(result) {
+          var player = {
+            uid: "",
+            name: result
+          };
+          
+          if(!$scope.club.players) {
+            $scope.club.players = [];
+          }
+          
+          $scope.club.players.push(player);
+          
+          $ionicLoading.show({
+            template: 'Saving Club...'
+          });
+          
+          Data.clubs().save($scope.club).then(function() {
+            $ionicLoading.hide();
+          }).catch(function(error) {
+            $ionicLoading.hide();
+            
+            $scope.error = error;
+            Message.timedAlert('Error', $scope.error, 'short');
+          });
+        }
+      }
+    };
+    Message.prompt(options);
+  };
+  
+  $scope.thisIsMe = function(player) {
+    $ionicListDelegate.closeOptionButtons();
+    
+    // 1. Confirm
+    var options = {
+      title: "Is This You?",
+      subTitle: "Are you sure you would like to save " + player.name + " as you in the league's players?",
+      message: "THIS CANNOT BE UNDONE!",
+      positive_label: "YES",
+      negative_label: "NO",
+      callback: function(result) {
+        if(result) {
+          // 2. Remove course
+          $ionicLoading.show({
+            template: 'Saving Player...'
+          });
+          
+          var idx = $scope.club.players.indexOf(player);
+          $scope.club.players[idx].uid = Data.user().uid();
+        
+          Data.clubs().save($scope.club).then(function(ref) {
+            // See if current user is a player in this club
+            $scope.isplayer = false;
+            if($scope.club.players) {
+              var uid = Data.user().uid();
+              for(var i=0; i<$scope.club.players.length; i++) {
+                if($scope.club.players[i].uid === uid) {
+                  $scope.isplayer = true;
+                  break;
+                }
+              }
+            }
+            
+            $ionicLoading.hide();
+          }, function(error) {
+            $ionicLoading.hide();
+            
+            $scope.error = error;
+            Message.timedAlert('Error', $scope.error, 'long');
+          });
+        }
+      }
+    };
+    Message.confirm(options);
+  };
+  
+  $scope.removePlayer = function(player) {
+    $ionicListDelegate.closeOptionButtons();
+    
+    // 1. Confirm
+    var options = {
+      title: "Remove Player",
+      subTitle: "Are you sure you would like to remove " + player.name + " from the league's players?",
+      message: "THIS CANNOT BE UNDONE!",
+      positive_label: "YES",
+      negative_label: "NO",
+      callback: function(result) {
+        if(result) {
+          // 2. Remove course
+          $ionicLoading.show({
+            template: 'Removing Player...'
+          });
+          
+          var idx = $scope.club.players.indexOf(player);
+          $scope.club.players.splice(idx, 1);
+        
+          Data.clubs().save($scope.club).then(function(ref) {
+            // See if current user is a player in this club
+            $scope.isplayer = false;
+            if($scope.club.players) {
+              var uid = Data.user().uid();
+              for(var i=0; i<$scope.club.players.length; i++) {
+                if($scope.club.players[i].uid === uid) {
+                  $scope.isplayer = true;
+                  break;
+                }
+              }
+            }
+            
+            $ionicLoading.hide();
           }, function(error) {
             $ionicLoading.hide();
             
@@ -464,13 +641,13 @@ angular.module('app.controllers', [])
     });
     
     Data.clubs().save($scope.club).then(function() {
-        $ionicLoading.hide();
-        $ionicHistory.goBack();
-      }).catch(function(error) {
-        $ionicLoading.hide();
-        
-        $scope.error = error;
-        Message.timedAlert('Error', $scope.error, 'short');
-      });
+      $ionicLoading.hide();
+      $ionicHistory.goBack();
+    }).catch(function(error) {
+      $ionicLoading.hide();
+      
+      $scope.error = error;
+      Message.timedAlert('Error', $scope.error, 'short');
+    });
   };
 });
