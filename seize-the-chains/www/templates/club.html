@@ -13,5 +13,19 @@
         {{club.location}}
       </label>
     </div>
+    <div class="row">
+      <div class="col">
+        <span>League Players</span>
+        <ion-list can-swipe="true">
+          <ion-item ng-repeat="player in club.players">
+            {{player.name}}
+            <ion-option-button class="button-positive icon ion-person" ng-click="thisIsMe(player)" ng-hide="{{player.uid === '' ? false : true}}"></ion-option-button>
+            <ion-option-button class="button-assertive icon ion-trash-b" ng-click="removePlayer(player)"></ion-option-button>
+          </ion-item>
+        </ion-list>
+        <button class="button button-full button-balanced" ng-click="addMe()" ng-hide="isplayer">Add Me</button>
+        <button class="button button-full button-balanced" ng-click="addPlayer()">Add Player</button>
+      </div>
+    </div>
   </ion-content>
 </ion-view>
