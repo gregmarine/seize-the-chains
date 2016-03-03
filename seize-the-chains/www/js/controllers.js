@@ -252,19 +252,14 @@ angular.module('app.controllers', [])
 })
 
 .controller('HomeCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $firebaseArray, $firebaseObject, Data, Message) {
-  var authData = Data.auth.getAuth();
-  
+
 })
 
 .controller('CoursesCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $firebaseArray, $firebaseObject, Data, Message) {
-  var authData = Data.auth.getAuth();
-  
   $scope.courses = Data.courses().all();
 })
 
 .controller('CourseCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
-  var authData = Data.auth.getAuth();
-  
   $scope.courseId = $stateParams.courseId;
   
   $scope.course = Data.courses().findOne($scope.courseId);
@@ -272,7 +267,7 @@ angular.module('app.controllers', [])
   $scope.remove = function() {
     // 1. Confirm
     var options = {
-      title: "Delete Account",
+      title: "Delete Course",
       subTitle: "Are you sure you would like to delete " + $scope.course.name + "?",
       message: "THIS CANNOT BE UNDONE!",
       positive_label: "YES",
@@ -281,7 +276,7 @@ angular.module('app.controllers', [])
         if(result) {
           // 2. Remove course
           $ionicLoading.show({
-            template: 'Deleting Account...'
+            template: 'Deleting Course...'
           });
         
           Data.courses().remove($scope.course).then(function(ref) {
@@ -302,8 +297,6 @@ angular.module('app.controllers', [])
 })
 
 .controller('NewCourseCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
-  var authData = Data.auth.getAuth();
-  
   $scope.course = {
     name: "",
     location: "",
@@ -329,9 +322,13 @@ angular.module('app.controllers', [])
       template: 'Saving Course...'
     });
     
-    Data.courses().add($scope.course.name,
-      $scope.course.location,
-      $scope.course.holes).then(function() {
+    var course = {
+      name: $scope.course.name,
+      location: $scope.course.location,
+      holes: $scope.course.holes
+    };
+    
+    Data.courses().add(course).then(function() {
         $ionicLoading.hide();
         $ionicHistory.goBack();
       }).catch(function(error) {
@@ -344,8 +341,6 @@ angular.module('app.controllers', [])
 })
 
 .controller('EditCourseCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
-  var authData = Data.auth.getAuth();
-  
   $scope.courseId = $stateParams.courseId;
   
   $scope.course = Data.courses().findOne($scope.courseId);
@@ -370,6 +365,105 @@ angular.module('app.controllers', [])
     });
     
     Data.courses().save($scope.course).then(function() {
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+      }).catch(function(error) {
+        $ionicLoading.hide();
+        
+        $scope.error = error;
+        Message.timedAlert('Error', $scope.error, 'short');
+      });
+  };
+})
+
+.controller('ClubsCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $firebaseArray, $firebaseObject, Data, Message) {
+  $scope.clubs = Data.clubs().all();
+})
+
+.controller('ClubCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  $scope.clubId = $stateParams.clubId;
+  
+  $scope.club = Data.clubs().findOne($scope.clubId);
+  
+  $scope.remove = function() {
+    // 1. Confirm
+    var options = {
+      title: "Delete Club",
+      subTitle: "Are you sure you would like to delete " + $scope.club.name + "?",
+      message: "THIS CANNOT BE UNDONE!",
+      positive_label: "YES",
+      negative_label: "NO",
+      callback: function(result) {
+        if(result) {
+          // 2. Remove course
+          $ionicLoading.show({
+            template: 'Deleting Club...'
+          });
+        
+          Data.clubs().remove($scope.club).then(function(ref) {
+            $ionicLoading.hide();
+            
+            $ionicHistory.goBack();
+          }, function(error) {
+            $ionicLoading.hide();
+            
+            $scope.error = error;
+            Message.timedAlert('Error', $scope.error, 'long');
+          });
+        }
+      }
+    };
+    Message.confirm(options);
+  };
+})
+
+.controller('NewClubCtrl', function($scope, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  $scope.club = {
+    name: "",
+    location: ""
+  };
+  
+  $scope.cancel = function() {
+    $ionicHistory.goBack();
+  };
+  
+  $scope.save = function() {
+    $ionicLoading.show({
+      template: 'Saving Course...'
+    });
+    
+    var club = {
+      name: $scope.club.name,
+      location: $scope.club.location
+    };
+    
+    Data.clubs().add(club).then(function() {
+        $ionicLoading.hide();
+        $ionicHistory.goBack();
+      }).catch(function(error) {
+        $ionicLoading.hide();
+        
+        $scope.error = error;
+        Message.timedAlert('Error', $scope.error, 'short');
+      });
+  };
+})
+
+.controller('EditClubCtrl', function($scope, $stateParams, $ionicModal, $ionicListDelegate, $ionicLoading, $ionicHistory, $firebaseArray, $firebaseObject, Data, Message) {
+  $scope.clubId = $stateParams.clubId;
+  
+  $scope.club = Data.clubs().findOne($scope.clubId);
+  
+  $scope.cancel = function() {
+    $ionicHistory.goBack();
+  };
+  
+  $scope.save = function() {
+    $ionicLoading.show({
+      template: 'Saving Club...'
+    });
+    
+    Data.clubs().save($scope.club).then(function() {
         $ionicLoading.hide();
         $ionicHistory.goBack();
       }).catch(function(error) {

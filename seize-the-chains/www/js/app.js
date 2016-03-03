@@ -156,6 +156,74 @@ angular.module('app', ['ionic', 'firebase', 'firebase.config', 'app.controllers'
         }
       }
     }
+  })
+
+  .state('app.clubs', {
+    url: '/clubs',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/clubs.html',
+        controller: 'ClubsCtrl',
+        resolve: {
+          "currentAuth": ["Data", function(Data) {
+            // $requireAuth returns a promise so the resolve waits for it to complete
+            // If the promise is rejected, it will throw a $stateChangeError (see above)
+            return Data.auth.requireAuth();
+          }]
+        }
+      }
+    }
+  })
+
+  .state('app.newclub', {
+    url: '/clubs/new',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/new-club.html',
+        controller: 'NewClubCtrl',
+        resolve: {
+          "currentAuth": ["Data", function(Data) {
+            // $requireAuth returns a promise so the resolve waits for it to complete
+            // If the promise is rejected, it will throw a $stateChangeError (see above)
+            return Data.auth.requireAuth();
+          }]
+        }
+      }
+    }
+  })
+
+  .state('app.club', {
+    url: '/club/:clubId',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/club.html',
+        controller: 'ClubCtrl',
+        resolve: {
+          "currentAuth": ["Data", function(Data) {
+            // $requireAuth returns a promise so the resolve waits for it to complete
+            // If the promise is rejected, it will throw a $stateChangeError (see above)
+            return Data.auth.requireAuth();
+          }]
+        }
+      }
+    }
+  })
+
+  .state('app.editclub', {
+    url: '/club/:clubId/edit',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/edit-club.html',
+        controller: 'EditClubCtrl',
+        resolve: {
+          "currentAuth": ["Data", function(Data) {
+            // $requireAuth returns a promise so the resolve waits for it to complete
+            // If the promise is rejected, it will throw a $stateChangeError (see above)
+            return Data.auth.requireAuth();
+          }]
+        }
+      }
+    }
   });
   
   // if none of the above states are matched, use this as the fallback
