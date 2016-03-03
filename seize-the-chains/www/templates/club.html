@@ -1,0 +1,17 @@
+<ion-view view-title="">
+  <ion-nav-buttons side="right">
+    <a class="button button-clear button-icon ion-compose" href="#/app/club/{{clubId}}/edit"></a>
+    <a class="button button-clear button-icon ion-trash-b" ng-click="remove()"></a>
+  </ion-nav-buttons>
+  
+  <ion-content>
+    <div class="list list-inset">
+      <label class="item">
+        {{club.name}}
+      </label>
+      <label class="item">
+        {{club.location}}
+      </label>
+    </div>
+  </ion-content>
+</ion-view>

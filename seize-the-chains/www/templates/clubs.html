@@ -1,0 +1,18 @@
+<ion-view view-title="Clubs">
+  <ion-content>
+    <div ng-repeat="club in clubs" class="card">
+      <ion-item class="item item-text-wrap" href="#/app/club/{{club.$id}}">
+        {{club.name}} - {{club.location}}
+      </ion-item>
+      <h6 style="margin-left: 16px;"></h6>
+    </div>
+  </ion-content>
+  
+  <div class="float-button">
+    <span class="height-fix">
+      <a class="content" href="#/app/clubs/new">
+        <i class="ion-plus"> </i>
+      </a>
+    </span>
+  </div>
+</ion-view>

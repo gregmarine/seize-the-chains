@@ -1,0 +1,19 @@
+<ion-view view-title="Edit Club">
+  <ion-content>
+    <div class="list list-inset">
+      <label class="item item-input item-floating-label">
+        <span class="input-label">Club Name</span>
+        <input ng-model="club.name" type="text" placeholder="Club Name">
+      </label>
+      <label class="item item-input item-floating-label">
+        <span class="input-label">Location</span>
+        <input ng-model="club.location" type="text" placeholder="Location">
+      </label>
+    </div>
+  </ion-content>
+  
+  <div class="bar bar-footer">
+    <button class="button button-clear" ng-click="cancel()">Cancel</button>
+    <button class="button button-clear button-balanced" ng-click="save()">Save</button>
+  </div>
+</ion-view>

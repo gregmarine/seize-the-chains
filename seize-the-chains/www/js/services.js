@@ -105,14 +105,9 @@ angular.module('app.services', [])
           return $firebaseObject(_baseRef.child('courses').child(courseId));
         },
         
-        add: function(name, location, holes) {
-          var course = {
-            name: name,
-            location: location,
-            holes: holes,
-            totalPar: totalPar(holes),
-            totalDistance: totalDistance(holes)
-          };
+        add: function(course) {
+          course.totalPar = totalPar(course.holes);
+          course.totalDistance = totalDistance(course.holes);
           
           return coursesArray.$add(course);
         },
@@ -126,6 +121,32 @@ angular.module('app.services', [])
         
         remove: function(course) {
           return course.$remove();
+        }
+      };
+    },
+    
+    clubs: function() {
+      var clubsArray = $firebaseArray(_baseRef.child('clubs'));
+      
+      return {
+        all: function() {
+          return clubsArray;
+        },
+        
+        findOne: function(clubId) {
+          return $firebaseObject(_baseRef.child('clubs').child(clubId));
+        },
+        
+        add: function(club) {
+          return clubsArray.$add(club);
+        },
+        
+        save: function(club) {
+          return club.$save();
+        },
+        
+        remove: function(club) {
+          return club.$remove();
         }
       };
     }
